@@ -10,7 +10,6 @@ datetime
 spacy
 textblob
 neattext
-collections
 PyPDF2
 wordcloud
 
