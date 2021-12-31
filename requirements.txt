@@ -1,1 +1,16 @@
-matplotlib==1.1.1
+altair
+pandas
+numpy
+streamlit
+matplotlib
+seaborn
+docx2txt
+pdfplumber
+datetime
+spacy
+textblob
+neattext
+collections
+PyPDF2
+wordcloud
+
