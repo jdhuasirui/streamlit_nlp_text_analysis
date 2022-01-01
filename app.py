@@ -206,7 +206,7 @@ def main():
                     img = load_image(image_file)
                     st.image(img, width=250)
             with col2:
-                with st.expander("Default(JPEG"):
+                with st.expander("Default(JPEG)"):
                     st.info("Using Pillow")
                     img = load_image(image_file)
                     #st.write(dir(img))
