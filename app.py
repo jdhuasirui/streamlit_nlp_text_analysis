@@ -133,7 +133,6 @@ def main():
     st.title("Streamlit Apps")
     menu = [
         "📚NLP",
-        "📚NLP(Upload File)",
         "Metadata Extractor Home",
         "Image Metadata Extractor",
         "Audio Metadata Extractor",
@@ -145,27 +144,28 @@ def main():
 
     choice = st.sidebar.selectbox("Menu", menu)
     if choice == "📚NLP":
-        st.subheader("Home: Text Analysis")
-        raw_text = st.text_area("Enter Text Here")
-        num_of_most_common = st.sidebar.number_input("Most Common Tokens", 5, 15)
-        if st.button("Analyze"):
-            text_analysis(raw_text=raw_text, num_of_most_common=num_of_most_common)
+        st.subheader("Text Analysis")
+        text_choice = st.selectbox("Select Methods", ['Enter Text', 'Upload File'])
+        
+        if text_choice == 'Enter Text':
+            raw_text = st.text_area("Enter Text Here")
+            num_of_most_common = st.number_input("Most Common Tokens", 5, 15)
+            if st.button("Analyze"):
+                text_analysis(raw_text=raw_text, num_of_most_common=num_of_most_common)
+        
+        elif text_choice == 'Upload File':
+            text_file = st.file_uploader("Upload Files", type=["pdf", "docx", "txt"])
+            num_of_most_common = st.number_input("Most Common Tokens", 5, 15)
 
-    elif choice == "📚NLP(Upload File)":
-        st.subheader("NLP Task")
+            if text_file is not None:
+                if text_file.type == "application/pdf":
+                    raw_text = read_pdf(text_file)
+                elif text_file.type == "text/plain":
+                    raw_text = str(text_file.read(), "utf-8")
+                else:
+                    raw_text = docx2txt.process(text_file)
 
-        text_file = st.file_uploader("Upload Files", type=["pdf", "docx", "txt"])
-        num_of_most_common = st.sidebar.number_input("Most Common Tokens", 5, 15)
-
-        if text_file is not None:
-            if text_file.type == "application/pdf":
-                raw_text = read_pdf(text_file)
-            elif text_file.type == "text/plain":
-                raw_text = str(text_file.read(), "utf-8")
-            else:
-                raw_text = docx2txt.process(text_file)
-
-            text_analysis(raw_text=raw_text, num_of_most_common=num_of_most_common)
+                text_analysis(raw_text=raw_text, num_of_most_common=num_of_most_common)
 
     elif choice == "Metadata Extractor Home":
         st.subheader("Image Metadata Extractor")
