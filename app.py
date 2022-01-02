@@ -44,7 +44,7 @@ from app_utils import *
 def make_downloadable(data):
     csvfile = data.to_csv(index=False)
     b64 = base64.b64encode(csvfile.encode()).decode()
-    new_filename = "nlp_results_{}_.csv".format(timestr)
+    new_filename = "results_{}_.csv".format(timestr)
     st.markdown("### **Download CVS file**")
     href = f'<a href="data:file/csv;base64,{b64}" download="{new_filename}">Download csv file</a>'
     st.markdown(href, unsafe_allow_html=True)
@@ -228,9 +228,54 @@ def main():
                     st.dataframe(df_meta_tags) 
             with fcol2:
                 pass
+            
+            with st.expander("Download Results"):
+                final_df= pd.concat([df_file_details_combined, df_img_details, df_meta_tags])
+                make_downloadable(final_df)
 
     elif choice == "Audio Metadata Extractor":
         st.subheader('Audio Metadata Extractor')
+        audio_file = st.file_uploader("Upload Audio",type=["mp3","ogg","wav","m4a"])
+        if audio_file is not None:
+            col1, col2 = st.columns(2)
+            with col1:
+                st.audio(audio_file.read())
+            with col2:
+                with st.expander("File Stats"):
+                    file_details = {"FileName":audio_file.name,
+                                "FileSize":audio_file.size,
+                                "FileType":audio_file.type}
+                    st.write(file_details)
+
+                    statsinfo = os.stat(audio_file.readable())
+                    st.write(statsinfo)
+                    stats_details = {"Accessed_Time":get_readable_time(statsinfo.st_atime),
+                                 "Creation_Time":get_readable_time(statsinfo.st_ctime),
+                                 "Modefication_Time":get_readable_time(statsinfo.st_mtime)}
+                    st.write(stats_details)
+
+                    # combine all file details
+                    file_details_combined = {"FileName":audio_file.name,
+                                         "FileSize":audio_file.size,
+                                         "FileType":audio_file.type,
+                                         "Accessed_Time":get_readable_time(statsinfo.st_atime),
+                                         "Creation_Time":get_readable_time(statsinfo.st_ctime),
+                                         "Modefication_Time":get_readable_time(statsinfo.st_mtime)}
+                
+                    # convert to DataFrame
+                    df_file_details_combined = pd.DataFrame(file_details_combined.items(),columns=['Meta Tag','Value']).astype(str)
+                    st.dataframe(df_file_details_combined)
+            
+            with st.expander("Metadata with Mutagen"):
+                meta_tags = mutagen.File(audio_file)
+                df_audio_details = pd.DataFrame(file_details.items(), columns=['Meta Tag', "Value"]).astype(str)
+                st.dataframe(df_audio_details)
+
+            with st.expander("Download Results"):
+                final_df = pd.concat([df_file_details_combined, df_audio_details])
+                make_downloadable(final_df)
+
+
 
     elif choice == "DocumentFiles Metadata Extractor":
         st.subheader('DocumentFiles Metadata Extractor Metadata Extractor')
