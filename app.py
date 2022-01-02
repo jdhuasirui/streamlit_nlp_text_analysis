@@ -275,10 +275,51 @@ def main():
                 final_df = pd.concat([df_file_details_combined, df_audio_details])
                 make_downloadable(final_df)
 
-
-
     elif choice == "DocumentFiles Metadata Extractor":
         st.subheader('DocumentFiles Metadata Extractor Metadata Extractor')
+        text_file= st.file_uploader("Upload File", type=['PDF'])
+
+        if text_file is not None:
+            col1, col2 = st.columns(2)
+            with col1:
+                with st.expander("File Stats"):
+                    file_details = {"FileName":text_file.name,
+                                "FileSize":text_file.size,
+                                "FileType":text_file.type}
+                    st.write(file_details)
+
+                    statsinfo = os.stat(text_file.readable())
+                    st.write(statsinfo)
+                    stats_details = {"Accessed_Time":get_readable_time(statsinfo.st_atime),
+                                 "Creation_Time":get_readable_time(statsinfo.st_ctime),
+                                 "Modefication_Time":get_readable_time(statsinfo.st_mtime)}
+                    st.write(stats_details)
+
+                    # combine all file details
+                    file_details_combined = {"FileName":text_file.name,
+                                         "FileSize":text_file.size,
+                                         "FileType":text_file.type,
+                                         "Accessed_Time":get_readable_time(statsinfo.st_atime),
+                                         "Creation_Time":get_readable_time(statsinfo.st_ctime),
+                                         "Modefication_Time":get_readable_time(statsinfo.st_mtime)}
+                
+                    # convert to DataFrame
+                    df_file_details_combined = pd.DataFrame(file_details_combined.items(),columns=['Meta Tag','Value']).astype(str)
+                    st.dataframe(df_file_details_combined)
+
+            # Extraction
+            with col2:
+                with st.expander("Metadata with Mutagen"):
+                    pdf_file = PdfFileReader(text_file)
+                    pdf_info = pdf_file.getDocumentInfo()
+                    df_pdf_info = pd.DataFrame(pdf_info.items(),columns=['Meta Tag','Value']).astype(str)
+                    st.dataframe(df_pdf_info)
+
+            with st.expander("Download Results"):
+                final_df = pd.concat([df_file_details_combined, df_pdf_info])
+                make_downloadable(final_df)
+
+
 
     else:
         st.subheader("About")
