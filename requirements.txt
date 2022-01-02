@@ -17,4 +17,4 @@ mutagen
 tinytag
 pillow
 exifread
-sqlite
+
