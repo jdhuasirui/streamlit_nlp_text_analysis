@@ -18,3 +18,4 @@ tinytag
 pillow
 exifread
 joblib
+sklearn
