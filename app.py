@@ -42,6 +42,7 @@ def load_image(image_file):
 
 # import extrernal pkgs
 from app_utils import *
+from ml_app import *
 
 # define function to get downloads
 def make_downloadable(data):
@@ -138,6 +139,7 @@ def main():
         "Audio Metadata Extractor",
         "DocumentFiles Metadata Extractor",
         "Analytics",
+        "ML Prediction App",
         "About",
     ]
     create_uploaded_filetable()
@@ -404,6 +406,8 @@ def main():
             fig = plt.figure()
             sns.countplot(df["filetype"])
             st.pyplot(fig)
+    elif choice == "ML Prediction App":
+        run_ml_app()
 
     else:
         st.subheader("About")
